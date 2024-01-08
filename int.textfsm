@@ -1,0 +1,211 @@
+Value interfacename (\S+)
+Value admin_state (\w+(\s+\w+)*)
+Value line_protocol (\w+(\s+\w+)*)
+Value last_link_flap (\S+)
+Value mtu (\d+)
+Value bw (\d+)
+Value descr (.*)
+Value mac_address (\S+)
+Value hardware_type ([^,]+)
+Value encap (\S+[^\s|,])
+Value vid ([\w]*)
+Value input_pkts (\d+)
+Value input_total_drops (\d+)
+Value input_errors (\d+)
+Value input_pkts_rate (\d+)
+Value input_bytes (\d+)
+Value input_broadcast_pkts (\d+)
+Value input_multicast_pkts (\d+)
+Value input_runts (\d+)
+Value output_pkts (\d+)
+Value output_total_drops (\d+)
+Value output_errors (\d+)
+Value output_pkts_rate (\d+)
+Value output_bytes (\d+)
+Value output_broadcast_pkts (\d+)
+Value output_multicast_pkts (\d+)
+Value carrier_trans (\d+)
+Value ipv4_address (\d+\.\d+.\d+.\d+)
+Value prefix_length (\d+)
+Value tunnel_name (tunnel-\w+\d+)
+Value tunnel_mode ((\w+\s)?[\w\d]+)
+Value tunnel_source ([\d\.\:\/]+)
+Value tunnel_destination (\S+)
+Value keepalive (\w+)
+Value tos (\w+)
+Value ttl (\w+)
+Value last_input (\S+)
+Value last_output (\S+)
+Value transition_number (\d+)
+Value dampening_enabled (\w+)
+Value penalty (\d+)
+Value decay_half_life ([0-9]+)
+Value reuse_threshold ([0-9]+)
+Value suppress_threshold ([0-9]+)
+Value max_suppress_time ([0-9]+)
+Value restart_penalty ([0-9]+)
+Value data_input_rate (\d+)
+Value data_output_rate (\d+)
+Value crc ([0-9]+)
+Value unrecognized_ul_protocol_drops (\d+)
+Value loopback_set (.*?)
+Value last_clear (.*?)
+Value carrier_delay_up (\d+)
+Value carrier_delay_down (\d+)
+Value duplex (.*?)
+Value speed (\d+)
+Value ethernet (.*?)
+Value negotiation (.*?)
+Value out_flow_control (\w+)
+Value in_flow_control (\w+)
+ 
+Start
+  ^${tunnel_name}\s+is\s+${admin_state},\s+line protocol is\s+${line_protocol} -> tunnel_ip_data
+  ^${interfacename}\s+is\s+${admin_state},\s+line protocol is\s+${line_protocol} -> regular_interface
+ 
+regular_interface
+  ^\s*Interface\s+state\s+transitions:\s+${transition_number}
+  ^\s*Dampening\s${dampening_enabled}: penalty ${penalty}
+  ^\s*half-life:\s+${decay_half_life}\s+reuse:\s+${reuse_threshold}
+  ^\s*suppress:\s+${suppress_threshold}\s+max-suppress-time:\s+${max_suppress_time}
+  ^\s*restart-penalty:\s+${restart_penalty}
+  ^\s+Hardware is VLAN ${hardware_type}, address is ${mac_address} -> sub_interface
+  ^\s+Hardware\s+is\s+${hardware_type},\s+address\s+is\s+${mac_address} -> physical_interface
+  ^\s+Hardware is ${hardware_type}\s+interface.s. -> lo_interface
+  ^\s+Hardware is ${hardware_type} -> rest_of_interface
+ 
+lo_interface
+  ^\s+Internet address is ${ipv4_address}/${prefix_length}
+  ^\s+MTU\s+${mtu}\s+bytes,\s+BW\s+${bw}\s+\w+\s+
+  ^\s+MTU\s+${mtu}\s+bytes,\s+BW\s+${bw}
+  ^\s+reliability.*
+  ^\s+Encapsulation\s+${encap},\s+loopback\s+${loopback_set},
+  ^\s+Encapsulation\s+${encap}
+  ^\s+${duplex}.duplex,\s+${speed}Mb.s,\s+${ethernet},\s+link\s+type\s+is\s+${negotiation}
+  ^\s+${duplex}.duplex,\s+${speed}Mb.s,\s+link\s+type\s+is\s+${negotiation}
+  ^\s+Carrier\s+delay\s+\S+\s+is\s+${carrier_delay_up}\s+msec,\s+Carrier delay \S+\s+is\s+${carrier_delay_down}\s+msec
+  ^\s+Carrier\s+delay\s+\S+\s+is\s+${carrier_delay_up}\s+msec
+  ^\s+loopback\s+${loopback_set},
+  ^\s+Last link flapped ${last_link_flap}
+  ^\s*Last input ${last_input}, output ${last_output}
+  ^\s+Last clearing of .show interface. counters ${last_clear}
+  ^\s+Input/output data rate is disabled -> Record Start
+  ^\s+.*\s+input rate ${data_input_rate} bits/sec,\s+${input_pkts_rate} packets/sec
+  ^\s+.*\s+output rate ${data_output_rate} bits/sec,\s+${output_pkts_rate} packets/sec -> Record Start
+ 
+rest_of_interface
+  ^\s+Internet address is ${ipv4_address}/${prefix_length} 
+  ^\s+MTU\s+${mtu}\s+bytes,\s+BW\s+${bw}\s+\w+\s+
+  ^\s+MTU\s+${mtu}\s+bytes,\s+BW\s+${bw}
+  ^\s+reliability.*
+  ^\s+Encapsulation\s+${encap},\s+loopback\s+${loopback_set},
+  ^\s+Encapsulation\s+${encap}
+  ^\s+${duplex}.duplex,\s+${speed}Mb.s,\s+${ethernet},\s+link\s+type\s+is\s+${negotiation}
+  ^\s+${duplex}.duplex,\s+${speed}Mb.s,\s+link\s+type\s+is\s+${negotiation}
+  ^\s+Carrier\s+delay\s+\S+\s+is\s+${carrier_delay_up}\s+msec,\s+Carrier delay \S+\s+is\s+${carrier_delay_down}\s+msec
+  ^\s+Carrier\s+delay\s+\S+\s+is\s+${carrier_delay_up}\s+msec
+  ^\s+loopback\s+${loopback_set},
+  ^\s+Last link flapped ${last_link_flap}
+  ^\s*Last input ${last_input}, output ${last_output}
+  ^\s+Input/output data rate is disabled -> Record Start
+  ^\s+.*\s+input rate ${data_input_rate} bits/sec,\s+${input_pkts_rate} packets/sec
+  ^\s+.*\s+output rate ${data_output_rate} bits/sec,\s+${output_pkts_rate} packets/sec
+  ^\s+${input_pkts}\s+packets\s+input,\s+${input_bytes} bytes,\s+${input_total_drops}\s+total\s+input\s+drops
+  ^\s+${input_pkts}\s+packets\s+input,\s+${input_bytes} bytes
+  ^\s*${unrecognized_ul_protocol_drops}\sdrops for unrecognized upper-level protocol
+  ^\s+Received\s+${input_broadcast_pkts}\s+broadcast\s+packets,\s+${input_multicast_pkts}\s+multicast\s+packets
+  ^\s+${input_runts}\s+runts,.+ -> physical_interface
+  ^\s+${output_pkts}\s+packets\s+output,\s+${output_bytes} bytes,\s+${output_total_drops}\s+total output drops
+  ^\s+${output_pkts}\s+packets\s+output,\s+${output_bytes} bytes
+  ^\s+Output\s+${output_broadcast_pkts}\s+broadcast\s+packets,\s+${output_multicast_pkts}\s+multicast\s+packets -> Record Start
+ 
+sub_interface
+  ^\s+Description: ${descr}
+  ^\s+Internet address is ${ipv4_address}/${prefix_length}
+  ^\s+MTU\s+${mtu}\s+bytes,\s+BW\s+${bw}\s+\w+\s+
+  ^\s+MTU\s+${mtu}\s+bytes,\s+BW\s+${bw}
+  ^\s+Encapsulation\s+${encap} Virtual LAN, VLAN Id ${vid},  loopback not set,
+  ^\s+Encapsulation\s+${encap}
+  ^\s+${duplex}.duplex,\s+${speed}Mb.s,\s+${ethernet},\s+link\s+type\s+is\s+${negotiation}  
+  ^\s+${duplex}.duplex,\s+${speed}Mb.s,\s+link\s+type\s+is\s+${negotiation}
+  ^\s+Carrier\s+delay\s+\S+\s+is\s+${carrier_delay_up}\s+msec,\s+Carrier delay \S+\s+is\s+${carrier_delay_down}\s+msec
+  ^\s+Carrier\s+delay\s+\S+\s+is\s+${carrier_delay_up}\s+msec
+  ^\s+loopback\s+${loopback_set},
+  ^\s+Last link flapped ${last_link_flap}
+  ^\s+.*\s+input rate ${data_input_rate} bits/sec,\s+${input_pkts_rate} packets/sec
+  ^\s+.*\s+output rate ${data_output_rate} bits/sec,\s+${output_pkts_rate} packets/sec
+  ^\s+${input_pkts}\s+packets\s+input,\s+${input_bytes} bytes,\s+${input_total_drops}\s+total\s+input\s+drops
+  ^\s+${input_pkts}\s+packets\s+input,\s+${input_bytes} bytes
+  ^\s*${unrecognized_ul_protocol_drops}\sdrops for unrecognized upper-level protocol
+  ^\s+Received\s+${input_broadcast_pkts}\s+broadcast\s+packets,\s+${input_multicast_pkts}\s+multicast\s+packets
+  ^\s+${input_errors}\s+input errors,.+
+  ^\s+${output_pkts}\s+packets\s+output,\s+${output_bytes} bytes,\s+${output_total_drops}\s+total output drops
+  ^\s+${output_pkts}\s+packets\s+output,\s+${output_bytes} bytes
+  ^\s+Output\s+${output_broadcast_pkts}\s+broadcast\s+packets,\s+${output_multicast_pkts}\s+multicast\s+packets -> Record Start
+ 
+physical_interface
+  ^\s+Description: ${descr}
+  ^\s+Layer.*
+  ^\s+Internet address is ${ipv4_address}/${prefix_length}
+  ^\s+Internet address is Unknown
+  ^\s+MTU\s+${mtu}\s+bytes,\s+BW\s+${bw}(\s+\w+\s+.*)?
+  ^\s+reliability.*
+  ^\s+Encapsulation\s+${encap}.*
+  ^\s+${duplex}.duplex,\s+${speed}Mb.s,\s+${ethernet},\s+link\s+type\s+is\s+${negotiation}
+  ^\s+${duplex}.duplex,\s+${speed}Mb.s,\s+link\s+type\s+is\s+${negotiation}
+  ^\s+${duplex}.duplex, ${speed}Mb/s
+  ^\s+Full-duplex.*
+  ^\s+output\s+flow\s+control\s+is\s+${out_flow_control},\s+input\s+flow\s+control\s+is\s+${in_flow_control}
+  ^\s+Carrier\s+delay\s+\S+\s+is\s+${carrier_delay_up}\s+msec,\s+Carrier delay\s+\S+\s+is\s+${carrier_delay_down}\s+msec
+  ^\s+Carrier\s+delay\s+\S+\s+is\s+${carrier_delay_up}\s+msec
+  ^\s+loopback\s+${loopback_set},
+  ^\s+loopback not set,
+  ^\s+loopback set
+  ^\s+Last link flapped ${last_link_flap}
+  ^\s+ARP type ARPA, ARP timeout \S+
+  ^\s+.*members in this bundle: \d+.*
+  ^\s+\S+\s+Full-duplex.*
+  ^\s+Last input .*
+  ^\s+Last clearing of .show interface. counters ${last_clear}
+  ^\s+Last clearing .*
+  ^\s+.*\s+input rate ${data_input_rate} bits/sec,\s+${input_pkts_rate} packets/sec
+  ^\s+.*\s+output rate ${data_output_rate} bits/sec,\s+${output_pkts_rate} packets/sec
+  ^\s+${input_pkts}\s+packets\s+input,\s+${input_bytes} bytes,\s+${input_total_drops}\s+total\s+input\s+drops
+  ^\s+${input_pkts}\s+packets\s+input,\s+${input_bytes} bytesi
+  ^\s*${unrecognized_ul_protocol_drops}\sdrops for unrecognized upper-level protocol
+  ^\s+\d+\s+drops\s+for\s+.*
+  ^\s+Received\s+${input_broadcast_pkts}\s+broadcast\s+packets,\s+${input_multicast_pkts}\s+multicast\s+packets
+  ^\s+${input_runts}\s+runts,
+  ^\s+${input_errors}\s+input errors, ${crc} CRC,.*
+  ^\s+${output_pkts}\s+packets\s+output,\s+${output_bytes} bytes,\s+${output_total_drops}\s+total output drops
+  ^\s+${output_pkts}\s+packets\s+output,\s+${output_bytes} bytes
+  ^\s+Output\s+${output_broadcast_pkts}\s+broadcast\s+packets,\s+${output_multicast_pkts}\s+multicast\s+packets
+  ^\s+${output_errors}\s+output errors.*
+  ^\s+.*buffer failures.*
+  ^\s+${carrier_trans}\s+carrier transitions
+  ^ -> Record Start
+ 
+tunnel_ip_data
+  ^\s*Interface state transitions: ${transition_number}
+  ^\s*Hardware is ${hardware_type}
+  ^\s+Description: ${descr}
+  ^\s*Internet address is ${ipv4_address}/${prefix_length}
+  ^\s*MTU ${mtu} bytes, BW ${bw} \w+
+  ^\s*Encapsulation ${encap}
+  ^\s+${duplex}.duplex,\s+${speed}Mb/s,\s+${ethernet},\s+link\s+type\s+is\s+${negotiation}
+  ^\s+${duplex}.duplex,\s+${speed}Mb.s,\s+link\s+type\s+is\s+${negotiation}
+  ^\s*Tunnel TOS ${tos}
+  ^\s*Tunnel mode ${tunnel_mode}
+  ^\s*Keepalive is ${keepalive}
+  ^\s*Tunnel source ${tunnel_source}\s?\(?(\S+)?\)?, destination ${tunnel_destination}
+  ^\s*Tunnel TTL ${ttl}
+  ^\s*Last input ${last_input}, output ${last_output}
+  ^\s+Carrier\s+delay\s+\S+\s+is\s+${carrier_delay_up}\s+msec,\s+Carrier delay \S+\s+is\s+${carrier_delay_down}\s+msec
+  ^\s+Carrier\s+delay\s+\S+\s+is\s+${carrier_delay_up}\s+msec
+  ^\s+.*\s+input rate ${data_input_rate} bits/sec,\s+${input_pkts_rate} packets/sec
+  ^\s+.*\s+output rate ${data_output_rate} bits/sec,\s+${output_pkts_rate} packets/sec
+  ^\s*${input_pkts} packets input, ${input_bytes} bytes, ${input_total_drops} total input drops
+  ^\s*${unrecognized_ul_protocol_drops}\sdrops for unrecognized upper-level protocol
+  ^\s*Received ${input_broadcast_pkts} broadcast packets, ${input_multicast_pkts} multicast packets
+  ^\s*${output_pkts} packets output, ${output_bytes} bytes, ${output_total_drops} total output drops
+  ^\s*Output ${output_broadcast_pkts} broadcast packets, ${output_multicast_pkts} multicast packets -> Record Start
